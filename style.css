@@ -1,0 +1,491 @@
+/* ==========================================================================
+   DRIFT OS — design tokens
+   A workstation-inspired shell: phosphor amber accents on deep slate,
+   monospace chrome, geometric sans for content.
+   ========================================================================== */
+:root {
+  --bg:          #10141a;
+  --panel:       #1a2029;
+  --panel-alt:   #212936;
+  --panel-raise: #262f3d;
+  --border:      #313c4c;
+  --border-soft: #232b37;
+
+  --text:        #e9e7df;
+  --text-dim:    #8b93a3;
+  --text-faint:  #566073;
+
+  --amber:       #ffb000;
+  --amber-dim:   #a67300;
+  --cyan:        #5fd4d0;
+  --green:       #8fd14f;
+  --red:         #ff6b57;
+
+  --font-ui:   'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  --radius: 3px;
+  --topbar-h: 34px;
+  --taskbar-h: 40px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+::selection { background: var(--amber); color: #10141a; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--panel); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* ==========================================================================
+   Boot sequence — the signature moment
+   ========================================================================== */
+#boot-screen {
+  position: fixed; inset: 0;
+  background: #0a0d11;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vh 8vw;
+  z-index: 999;
+}
+
+#boot-log {
+  margin: 0 0 20px 0;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  min-height: 40vh;
+}
+
+#boot-log .ok    { color: var(--green); }
+#boot-log .warn  { color: var(--amber); }
+#boot-log .dim   { color: var(--text-faint); }
+#boot-log .cyan  { color: var(--cyan); }
+
+#boot-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+#boot-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--amber);
+  transition: width 0.12s linear;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+.cursor-blink { animation: blink 1s step-end infinite; }
+
+/* ==========================================================================
+   Desktop shell
+   ========================================================================== */
+#desktop {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% -10%, #1a2432 0%, transparent 55%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+    var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+#crt-overlay {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 500;
+  background: repeating-linear-gradient(
+    0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 2px
+  );
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+
+/* ---- Top bar ---- */
+#topbar {
+  height: var(--topbar-h);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  z-index: 400;
+  position: relative;
+}
+
+.topbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+}
+
+#launcher-btn { color: var(--amber); font-weight: 600; }
+#launcher-btn:hover, #launcher-btn.active { background: var(--panel-raise); }
+
+.logo-mark {
+  width: 11px; height: 11px;
+  border: 2px solid var(--amber);
+  display: inline-block;
+}
+
+#topbar-appname { color: var(--text); }
+.topbar-spacer { flex: 1; }
+#topbar-status { color: var(--green); font-size: 11px; }
+#topbar-clock { color: var(--cyan); min-width: 78px; justify-content: flex-end; }
+
+/* ---- Launcher menu ---- */
+#launcher-menu {
+  position: absolute;
+  top: var(--topbar-h);
+  left: 6px;
+  width: 220px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  z-index: 450;
+  padding: 6px;
+}
+
+.launcher-header {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  padding: 6px 10px 8px;
+  text-transform: uppercase;
+}
+
+.launcher-app {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+}
+.launcher-app:hover { background: var(--panel-raise); }
+.app-glyph {
+  width: 20px;
+  font-family: var(--font-mono);
+  color: var(--amber);
+  text-align: center;
+  flex: 0 0 auto;
+}
+.launcher-divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 6px 4px;
+}
+
+/* ---- Desktop icon grid ---- */
+#icon-grid {
+  position: absolute;
+  top: calc(var(--topbar-h) + 20px);
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.desktop-icon {
+  width: 84px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px;
+  border-radius: var(--radius);
+}
+.desktop-icon:hover { background: rgba(255,255,255,0.04); }
+.desktop-icon:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.desktop-icon .icon-glyph {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  color: var(--amber);
+}
+.desktop-icon .icon-label {
+  font-size: 11.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+/* ---- Window layer ---- */
+#window-layer {
+  position: absolute;
+  inset: var(--topbar-h) 0 var(--taskbar-h) 0;
+  z-index: 20;
+}
+
+.window {
+  position: absolute;
+  min-width: 280px;
+  min-height: 180px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.window.focused { border-color: var(--amber-dim); }
+
+.window-titlebar {
+  height: 32px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0 8px 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: default;
+  user-select: none;
+}
+.window.focused .window-titlebar { color: var(--text); }
+.window-title { flex: 1; display: flex; align-items: center; gap: 8px; }
+.window-title .title-glyph { color: var(--amber); }
+
+.window-controls { display: flex; gap: 6px; }
+.win-btn {
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--panel-raise);
+  padding: 0;
+}
+.win-btn.min:hover { background: var(--cyan); border-color: var(--cyan); }
+.win-btn.max:hover { background: var(--green); border-color: var(--green); }
+.win-btn.close:hover { background: var(--red); border-color: var(--red); }
+
+.window-body {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: var(--bg);
+}
+
+.window-resize-handle {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 16px; height: 16px;
+  cursor: nwse-resize;
+}
+
+/* ---- Taskbar ---- */
+#taskbar {
+  height: var(--taskbar-h);
+  flex: 0 0 auto;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  z-index: 400;
+}
+
+#taskbar-running { display: flex; gap: 6px; height: 100%; align-items: center; }
+
+.taskbar-entry {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.taskbar-entry.active { color: var(--amber); border-color: var(--amber-dim); background: var(--panel-raise); }
+.taskbar-entry .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+/* ==========================================================================
+   App content
+   ========================================================================== */
+.app-pad { padding: 16px; }
+
+/* Terminal */
+.app-terminal {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--green);
+  padding: 12px 14px;
+  height: 100%;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+.app-terminal .term-line { white-space: pre-wrap; }
+.app-terminal .term-prompt { color: var(--amber); }
+.term-input-row { display: flex; gap: 6px; }
+.term-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+}
+
+/* Notepad */
+.app-notepad textarea {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.notepad-statusbar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 22px;
+  background: var(--panel-alt);
+  border-top: 1px solid var(--border-soft);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+/* Files */
+.app-files { display: flex; height: 100%; font-size: 13px; }
+.files-tree {
+  width: 150px;
+  flex: 0 0 auto;
+  background: var(--panel-alt);
+  border-right: 1px solid var(--border-soft);
+  padding: 10px 0;
+}
+.files-tree-item {
+  padding: 7px 14px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.files-tree-item:hover { background: var(--panel-raise); }
+.files-tree-item.active { color: var(--amber); background: var(--panel-raise); }
+.files-list { flex: 1; padding: 14px; display: flex; flex-wrap: wrap; gap: 16px; align-content: flex-start; }
+.file-entry {
+  width: 78px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: var(--text-dim);
+  text-align: center;
+}
+.file-entry .file-glyph {
+  width: 40px; height: 40px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cyan);
+  font-family: var(--font-mono);
+}
+.file-entry .file-name { font-size: 11px; }
+
+/* Calculator */
+.app-calc { padding: 12px; height: 100%; display: flex; flex-direction: column; }
+.calc-display {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 26px;
+  text-align: right;
+  padding: 14px 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.calc-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.calc-btn {
+  background: var(--panel-alt);
+  border: 1px solid var(--border-soft);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  border-radius: var(--radius);
+}
+.calc-btn:hover { background: var(--panel-raise); }
+.calc-btn.op { color: var(--amber); }
+.calc-btn.eq { background: var(--amber); color: #10141a; font-weight: 600; }
+.calc-btn.eq:hover { background: #ffc233; }
+
+/* About */
+.app-about { padding: 22px; font-size: 13.5px; line-height: 1.7; color: var(--text-dim); }
+.app-about h2 { font-family: var(--font-mono); color: var(--amber); margin: 0 0 4px; font-size: 18px; }
+.app-about .about-sub { color: var(--text-faint); font-family: var(--font-mono); font-size: 11px; margin-bottom: 18px; }
+.app-about dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-family: var(--font-mono); font-size: 12px; }
+.app-about dt { color: var(--text-faint); }
+.app-about dd { margin: 0; color: var(--text); }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 640px) {
+  #icon-grid { top: calc(var(--topbar-h) + 10px); left: 8px; }
+  .window { min-width: 90vw !important; left: 5vw !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
